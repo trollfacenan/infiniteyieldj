@@ -4456,6 +4456,7 @@ CMDs[#CMDs + 1] = {NAME = 'jobid', DESC = 'Copies the games JobId to your clipbo
 CMDs[#CMDs + 1] = {NAME = 'notifyjobid', DESC = 'Notifies you the games JobId'}
 CMDs[#CMDs + 1] = {NAME = 'rejoin / rj', DESC = 'Makes you rejoin the game'}
 CMDs[#CMDs + 1] = {NAME = 'autorejoin / autorj', DESC = 'Automatically rejoins the server if you get kicked/disconnected'}
+CMDs[#CMDs + 1] = {NAME = 'unautorejoin / unautorj', DESC = 'Disables autorejoin'}
 CMDs[#CMDs + 1] = {NAME = 'serverhop / shop', DESC = 'Teleports you to a different server'}
 CMDs[#CMDs + 1] = {NAME = 'gameteleport / gametp [place ID]', DESC = 'Joins a game by ID'}
 CMDs[#CMDs + 1] = {NAME = 'antiidle / antiafk', DESC = 'Prevents the game from kicking you for being idle/afk'}
@@ -6844,15 +6845,16 @@ addcmd("unautorejoin", {"unautorj"}, function(args, speaker)
 end)
 
 addcmd("serverhop", {"shop"}, function(args, speaker)
+	local filename = `servercache/{PlaceId}`
 	local servers = {}
-	local req = game:HttpGet(`https://games.roblox.com/v1/games/{game.PlaceId}/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true`)
+	local req = game:HttpGet(`https://games.roblox.com/v1/games/{PlaceId}/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true`)
 	local body = if req and #req ~= 0 then HttpService:JSONDecode(req) else nil
 
 	if not body or body.errors then
 		if isfile(filename) then
 			body = HttpService:JSONDecode(readfile(filename))
 		else
-			TeleportService:Teleport(game.PlaceId)
+			TeleportService:Teleport(PlaceId)
 			return
 		end
 	else
@@ -6868,9 +6870,9 @@ addcmd("serverhop", {"shop"}, function(args, speaker)
 	end
 
 	if #servers ~= 0 then
-		TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)])
+		TeleportService:TeleportToPlaceInstance(PlaceId, servers[math.random(1, #servers)])
 	else
-		TeleportService:Teleport(game.PlaceId)
+		TeleportService:Teleport(PlaceId)
 	end
 end)
 
