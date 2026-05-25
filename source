@@ -1,97 +1,92 @@
 if IY_LOADED and not _G.IY_DEBUG then
-	-- error("Infinite Yield is already running!", 0)
 	return
 end
 
-pcall(function() getgenv().IY_LOADED = true end)
+if getgenv then
+	getgenv().IY_LOADED = true
+end
 if not game:IsLoaded() then game.Loaded:Wait() end
 
-function missing(t, f, fallback)
-	if type(f) == t then return f end
+local function missing(t, f, fallback)
+	if typeof(f) == t then return f end
 	return fallback
 end
 
-cloneref = missing("function", cloneref, function(...) return ... end)
-sethidden =  missing("function", sethiddenproperty or set_hidden_property or set_hidden_prop)
-gethidden =  missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
-queueteleport =  missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
-httprequest =  missing("function", request or http_request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request))
-everyClipboard = missing("function", setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set))
-firetouchinterest = missing("function", firetouchinterest)
-waxwritefile, waxreadfile = writefile, readfile
-writefile = missing("function", waxwritefile) and function(file, data, safe)
+local cloneref = missing("function", cloneref, function(...) return ... end)
+local sethidden =  missing("function", sethiddenproperty or set_hidden_property or set_hidden_prop)
+local gethidden =  missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
+local queueteleport =  missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
+local httprequest =  missing("function", request or http_request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request))
+local everyClipboard = missing("function", setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set))
+local firetouchinterest = missing("function", firetouchinterest)
+local waxwritefile, waxreadfile = writefile, readfile
+local writefile = missing("function", waxwritefile) and function(file, data, safe)
 	if safe == true then return pcall(waxwritefile, file, data) end
 	waxwritefile(file, data)
 end
-readfile = missing("function", waxreadfile) and function(file, safe)
+local readfile = missing("function", waxreadfile) and function(file, safe)
 	if safe == true then return pcall(waxreadfile, file) end
 	return waxreadfile(file)
 end
-isfile = missing("function", isfile, readfile and function(file)
+local isfile = missing("function", isfile, readfile and function(file)
 	local success, result = pcall(function()
 		return readfile(file)
 	end)
 	return success and result ~= nil and result ~= ""
 end)
-makefolder = missing("function", makefolder)
-isfolder = missing("function", isfolder)
-waxgetcustomasset = missing("function", getcustomasset or getsynasset)
-hookfunction = missing("function", hookfunction)
-hookmetamethod = missing("function", hookmetamethod)
-getnamecallmethod = missing("function", getnamecallmethod or get_namecall_method)
-checkcaller = missing("function", checkcaller, function() return false end)
-newcclosure = missing("function", newcclosure)
-getgc = missing("function", getgc or get_gc_objects)
-setthreadidentity = missing("function", setthreadidentity or (syn and syn.set_thread_identity) or syn_context_set or setthreadcontext)
-replicatesignal = missing("function", replicatesignal)
-getconnections = missing("function", getconnections or get_signal_cons)
+local makefolder = missing("function", makefolder)
+local isfolder = missing("function", isfolder)
+local waxgetcustomasset = missing("function", getcustomasset or getsynasset)
+local hookfunction = missing("function", hookfunction)
+local hookmetamethod = missing("function", hookmetamethod)
+local getnamecallmethod = missing("function", getnamecallmethod or get_namecall_method)
+local checkcaller = missing("function", checkcaller, function() return false end)
+local newcclosure = missing("function", newcclosure)
+local getgc = missing("function", getgc or get_gc_objects)
+local setthreadidentity = missing("function", setthreadidentity or (syn and syn.set_thread_identity) or syn_context_set or setthreadcontext)
+local replicatesignal = missing("function", replicatesignal)
+local getconnections = missing("function", getconnections or get_signal_cons)
 
-Services = setmetatable({}, {
+local Services = setmetatable({}, {
 	__index = function(self, name)
-		local success, cache = pcall(function()
-			return cloneref(game:GetService(name))
-		end)
-		if success then
-			rawset(self, name, cache)
-			return cache
-		else
-			error("Invalid Service: " .. tostring(name))
-		end
+		local cache = cloneref(game:GetService(name))
+		rawset(self, name, cache)
+		return cache
 	end
 })
 
-Players = Services.Players
-UserInputService = Services.UserInputService
-TweenService = Services.TweenService
-HttpService = Services.HttpService
-MarketplaceService = Services.MarketplaceService
-RunService = Services.RunService
-TeleportService = Services.TeleportService
-StarterGui = Services.StarterGui
-GuiService = Services.GuiService
-Lighting = Services.Lighting
-ContextActionService = Services.ContextActionService
-ReplicatedStorage = Services.ReplicatedStorage
-GroupService = Services.GroupService
-PathService = Services.PathfindingService
-SoundService = Services.SoundService
-Teams = Services.Teams
-StarterPlayer = Services.StarterPlayer
-InsertService = Services.InsertService
-ChatService = Services.Chat
-ProximityPromptService = Services.ProximityPromptService
-ContentProvider = Services.ContentProvider
-StatsService = Services.Stats
-MaterialService = Services.MaterialService
-AvatarEditorService = Services.AvatarEditorService
-TextService = Services.TextService
-TextChatService = Services.TextChatService
-CaptureService = Services.CaptureService
-VoiceChatService = Services.VoiceChatService
-SocialService = Services.SocialService
+local Players = Services.Players
+local UserInputService = Services.UserInputService
+local TweenService = Services.TweenService
+local HttpService = Services.HttpService
+local MarketplaceService = Services.MarketplaceService
+local RunService = Services.RunService
+local TeleportService = Services.TeleportService
+local StarterGui = Services.StarterGui
+local GuiService = Services.GuiService
+local Lighting = Services.Lighting
+local ContextActionService = Services.ContextActionService
+local ReplicatedStorage = Services.ReplicatedStorage
+local GroupService = Services.GroupService
+local PathService = Services.PathfindingService
+local SoundService = Services.SoundService
+local Teams = Services.Teams
+local StarterPlayer = Services.StarterPlayer
+local InsertService = Services.InsertService
+local ChatService = Services.Chat
+local ProximityPromptService = Services.ProximityPromptService
+local ContentProvider = Services.ContentProvider
+local StatsService = Services.Stats
+local MaterialService = Services.MaterialService
+local AvatarEditorService = Services.AvatarEditorService
+local TextService = Services.TextService
+local TextChatService = Services.TextChatService
+local CaptureService = Services.CaptureService
+local VoiceChatService = Services.VoiceChatService
+local SocialService = Services.SocialService
 
-PlayerGui = cloneref(Players.LocalPlayer:FindFirstChildWhichIsA("PlayerGui"))
-COREGUI = Services.CoreGui or PlayerGui
+local PlayerGui = cloneref(Players.LocalPlayer.PlayerGui)
+CoreGui = Services.CoreGui or PlayerGui
 IYMouse = cloneref(Players.LocalPlayer:GetMouse())
 PlaceId, JobId = game.PlaceId, game.JobId
 xpcall(function()
@@ -100,9 +95,6 @@ end, function()
 	IsOnMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 end)
 isLegacyChat = TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService
---[[rcdEnabled = select(2, pcall(function()
-    return gethidden(workspace, "RejectCharacterDeletions") ~= Enum.RejectCharacterDeletions.Disabled
-end)) or false]]
 
 -- xylex & europa
 local iyassets = {
@@ -297,30 +289,30 @@ end
 PARENT = nil
 MAX_DISPLAY_ORDER = 2147483647
 if get_hidden_gui or gethui then
-    local hiddenUI = get_hidden_gui or gethui
-    local Main = Instance.new("ScreenGui")
-    Main.Name = randomString()
-    Main.ResetOnSpawn = false
-    Main.DisplayOrder = MAX_DISPLAY_ORDER
-    Main.Parent = hiddenUI()
-    PARENT = Main
+	local hiddenUI = get_hidden_gui or gethui
+	local Main = Instance.new("ScreenGui")
+	Main.Name = randomString()
+	Main.ResetOnSpawn = false
+	Main.DisplayOrder = MAX_DISPLAY_ORDER
+	Main.Parent = hiddenUI()
+	PARENT = Main
 elseif (not is_sirhurt_closure) and (syn and syn.protect_gui) then
-    local Main = Instance.new("ScreenGui")
-    Main.Name = randomString()
-    Main.ResetOnSpawn = false
-    Main.DisplayOrder = MAX_DISPLAY_ORDER
-    syn.protect_gui(Main)
-    Main.Parent = COREGUI
-    PARENT = Main
-elseif COREGUI:FindFirstChild("RobloxGui") then
-    PARENT = COREGUI.RobloxGui
+	local Main = Instance.new("ScreenGui")
+	Main.Name = randomString()
+	Main.ResetOnSpawn = false
+	Main.DisplayOrder = MAX_DISPLAY_ORDER
+	syn.protect_gui(Main)
+	Main.Parent = CoreGui
+	PARENT = Main
+elseif CoreGui:FindFirstChild("RobloxGui") then
+	PARENT = CoreGui.RobloxGui
 else
-    local Main = Instance.new("ScreenGui")
-    Main.Name = randomString()
-    Main.ResetOnSpawn = false
-    Main.DisplayOrder = MAX_DISPLAY_ORDER
-    Main.Parent = COREGUI
-    PARENT = Main
+	local Main = Instance.new("ScreenGui")
+	Main.Name = randomString()
+	Main.ResetOnSpawn = false
+	Main.DisplayOrder = MAX_DISPLAY_ORDER
+	Main.Parent = CoreGui
+	PARENT = Main
 end
 
 shade1 = {}
@@ -359,8 +351,6 @@ Title.Text = "Infinite Yield FE v" .. currentVersion
 do
 	local emoji = ({
 		["01 01"] = "🎆",
-		["02 14"] = "💝",
-		["03 17"] = "☘️",
 		[(function(Year)
 			local A = math.floor(Year/100)
 			local B = math.floor((13+8*A)/25)
@@ -2097,12 +2087,12 @@ function r15(plr)
 end
 
 function breakVelocity()
-    local V3 = Vector3.new(0, 0, 0)
-    for _, v in ipairs(Players.LocalPlayer.Character:GetDescendants()) do
-        if v:IsA("BasePart") then
-            v.Velocity, v.RotVelocity = V3, V3
-        end
-    end
+	local V3 = Vector3.new(0, 0, 0)
+	for _, v in ipairs(Players.LocalPlayer.Character:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.Velocity, v.RotVelocity = V3, V3
+		end
+	end
 end
 
 function toClipboard(txt)
@@ -4046,8 +4036,8 @@ if isLegacyChat then
 end
 
 Players.PlayerRemoving:Connect(function(player)
-	if ESPenabled or CHMSenabled or COREGUI:FindFirstChild(player.Name..'_LC') then
-		for i,v in pairs(COREGUI:GetChildren()) do
+	if ESPenabled or CHMSenabled or CoreGui:FindFirstChild(player.Name..'_LC') then
+		for i,v in pairs(CoreGui:GetChildren()) do
 			if v.Name == player.Name..'_ESP' or v.Name == player.Name..'_LC' or v.Name == player.Name..'_CHMS' then
 				v:Destroy()
 			end
@@ -4468,7 +4458,6 @@ CMDs[#CMDs + 1] = {NAME = 'olddex / odex', DESC = 'Opens Old DEX by Moon'}
 CMDs[#CMDs + 1] = {NAME = 'remotespy / rspy', DESC = 'Opens Simple Spy V3'}
 CMDs[#CMDs + 1] = {NAME = 'audiologger / alogger', DESC = 'Opens Edges audio logger'}
 CMDs[#CMDs + 1] = {NAME = 'serverinfo / info', DESC = 'Gives you info about the server'}
-CMDs[#CMDs + 1] = {NAME = 'serverscan', DESC = 'Scans strings for server references and reconstructs them'}
 CMDs[#CMDs + 1] = {NAME = 'jobid', DESC = 'Copies the games JobId to your clipboard'}
 CMDs[#CMDs + 1] = {NAME = 'notifyjobid', DESC = 'Notifies you the games JobId'}
 CMDs[#CMDs + 1] = {NAME = 'rejoin / rj', DESC = 'Makes you rejoin the game'}
@@ -4917,7 +4906,7 @@ IndexContents("", true)
 
 function checkTT()
 	local t
-	local guisAtPosition = COREGUI:GetGuiObjectsAtPosition(IYMouse.X, IYMouse.Y)
+	local guisAtPosition = CoreGui:GetGuiObjectsAtPosition(IYMouse.X, IYMouse.Y)
 
 	for _, gui in pairs(guisAtPosition) do
 		if gui.Parent == CMDsF then
@@ -4972,16 +4961,16 @@ end
 
 function respawn(plr)
 	if invisRunning then TurnVisible() end
-    local char = plr.Character
-    local hum = char:FindFirstChildWhichIsA("Humanoid")
-    if hum then hum:ChangeState(Enum.HumanoidStateType.Dead) end
-    char:ClearAllChildren()
-    local newChar = Instance.new("Model")
-    newChar.Parent = workspace
-    plr.Character = newChar
-    task.wait()
-    plr.Character = char
-    newChar:Destroy()
+	local char = plr.Character
+	local hum = char:FindFirstChildWhichIsA("Humanoid")
+	if hum then hum:ChangeState(Enum.HumanoidStateType.Dead) end
+	char:ClearAllChildren()
+	local newChar = Instance.new("Model")
+	newChar.Parent = workspace
+	plr.Character = newChar
+	task.wait()
+	plr.Character = char
+	newChar:Destroy()
 end
 
 local refreshCmd = false
@@ -5045,19 +5034,19 @@ end)
 onDied()
 
 local booly = {
-    truthy = { ["true"] = true, ["t"] = true, ["1"] = true, yes = true, y = true, on = true, enable = true, enabled = true },
-    falsy = { ["false"] = true, ["f"] = true, ["0"] = true, no = true, n = true, off = true, disable = true, disabled = true }
+	truthy = { ["true"] = true, ["t"] = true, ["1"] = true, yes = true, y = true, on = true, enable = true, enabled = true },
+	falsy = { ["false"] = true, ["f"] = true, ["0"] = true, no = true, n = true, off = true, disable = true, disabled = true }
 }
 
 function parseBoolean(raw, default)
-    raw = tostring(raw)
-    if booly.truthy[raw] then return true end
-    if booly.falsy[raw] then return false end
-    return default or false
+	raw = tostring(raw)
+	if booly.truthy[raw] then return true end
+	if booly.falsy[raw] then return false end
+	return default or false
 end
 
 function getstring(begin, args)
-    return table.concat(args or cargs, " ", begin)
+	return table.concat(args or cargs, " ", begin)
 end
 
 findCmd=function(cmd_name)
@@ -5691,45 +5680,23 @@ Cmdbar.Focused:Connect(function()
 	end)
 end)
 
-ESPenabled = false
-CHMSenabled = false
+local ESPenabled = false
+local CHMSenabled = false
 
-function round(num, numDecimalPlaces)
-	local mult = 10^(numDecimalPlaces or 0)
-	return math.floor(num * mult + 0.5) / mult
-end
-
-function ESP(plr, logic)
+local function ESP(plr, logic)
 	task.spawn(function()
-		for i,v in pairs(COREGUI:GetChildren()) do
-			if v.Name == plr.Name..'_ESP' then
+		for _, v in CoreGui:GetChildren() do
+			if v.Name == `{plr.Name}_ESP` then
 				v:Destroy()
 			end
 		end
-		wait()
-		if plr.Character and plr.Name ~= Players.LocalPlayer.Name and not COREGUI:FindFirstChild(plr.Name..'_ESP') then
+		if plr.Character and plr ~= Players.LocalPlayer and not CoreGui:FindFirstChild(`{plr.Name}_ESP`) then
 			local ESPholder = Instance.new("Folder")
-			ESPholder.Name = plr.Name..'_ESP'
-			ESPholder.Parent = COREGUI
-			repeat wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
-			for b,n in pairs (plr.Character:GetChildren()) do
-				if (n:IsA("BasePart")) then
-					local a = Instance.new("BoxHandleAdornment")
-					a.Name = plr.Name
-					a.Parent = ESPholder
-					a.Adornee = n
-					a.AlwaysOnTop = true
-					a.ZIndex = 10
-					a.Size = n.Size
-					a.Transparency = espTransparency
-					if logic == true then
-						a.Color = BrickColor.new(plr.TeamColor == Players.LocalPlayer.TeamColor and "Bright green" or "Bright red")
-					else
-						a.Color = plr.TeamColor
-					end
-				end
-			end
-			if plr.Character and plr.Character:FindFirstChild('Head') then
+			ESPholder.Name = `{plr.Name}_ESP`
+			ESPholder.Parent = CoreGui
+			Instance.new("Highlight", plr.Character)
+			
+			if plr.Character:FindFirstChild("Head") then
 				local BillboardGui = Instance.new("BillboardGui")
 				local TextLabel = Instance.new("TextLabel")
 				BillboardGui.Adornee = plr.Character.Head
@@ -5757,7 +5724,6 @@ function ESP(plr, logic)
 						espLoopFunc:Disconnect()
 						teamChange:Disconnect()
 						ESPholder:Destroy()
-						repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 						ESP(plr, logic)
 						addedFunc:Disconnect()
 					else
@@ -5778,10 +5744,10 @@ function ESP(plr, logic)
 					end
 				end)
 				local function espLoop()
-					if COREGUI:FindFirstChild(plr.Name..'_ESP') then
+					if CoreGui:FindFirstChild(plr.Name..'_ESP') then
 						if plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid") and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
 							local pos = math.floor((getRoot(Players.LocalPlayer.Character).Position - getRoot(plr.Character).Position).magnitude)
-							TextLabel.Text = 'Name: '..plr.Name..' | Health: '..round(plr.Character:FindFirstChildOfClass('Humanoid').Health, 1)..' | Studs: '..pos
+							TextLabel.Text = 'Name: '..plr.Name..' | Health: '..math.round(plr.Character:FindFirstChildOfClass('Humanoid').Health)..' | Studs: '..pos
 						end
 					else
 						teamChange:Disconnect()
@@ -5797,16 +5763,16 @@ end
 
 function CHMS(plr)
 	task.spawn(function()
-		for i,v in pairs(COREGUI:GetChildren()) do
+		for i,v in pairs(CoreGui:GetChildren()) do
 			if v.Name == plr.Name..'_CHMS' then
 				v:Destroy()
 			end
 		end
 		wait()
-		if plr.Character and plr.Name ~= Players.LocalPlayer.Name and not COREGUI:FindFirstChild(plr.Name..'_CHMS') then
+		if plr.Character and plr.Name ~= Players.LocalPlayer.Name and not CoreGui:FindFirstChild(plr.Name..'_CHMS') then
 			local ESPholder = Instance.new("Folder")
 			ESPholder.Name = plr.Name..'_CHMS'
-			ESPholder.Parent = COREGUI
+			ESPholder.Parent = CoreGui
 			repeat wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 			for b,n in pairs (plr.Character:GetChildren()) do
 				if (n:IsA("BasePart")) then
@@ -5858,16 +5824,16 @@ end
 
 function Locate(plr)
 	task.spawn(function()
-		for i,v in pairs(COREGUI:GetChildren()) do
+		for i,v in pairs(CoreGui:GetChildren()) do
 			if v.Name == plr.Name..'_LC' then
 				v:Destroy()
 			end
 		end
 		wait()
-		if plr.Character and plr.Name ~= Players.LocalPlayer.Name and not COREGUI:FindFirstChild(plr.Name..'_LC') then
+		if plr.Character and plr.Name ~= Players.LocalPlayer.Name and not CoreGui:FindFirstChild(plr.Name..'_LC') then
 			local ESPholder = Instance.new("Folder")
 			ESPholder.Name = plr.Name..'_LC'
-			ESPholder.Parent = COREGUI
+			ESPholder.Parent = CoreGui
 			repeat wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 			for b,n in pairs (plr.Character:GetChildren()) do
 				if (n:IsA("BasePart")) then
@@ -5931,7 +5897,7 @@ function Locate(plr)
 					end
 				end)
 				local function lcLoop()
-					if COREGUI:FindFirstChild(plr.Name..'_LC') then
+					if CoreGui:FindFirstChild(plr.Name..'_LC') then
 						if plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid") and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
 							local pos = math.floor((getRoot(Players.LocalPlayer.Character).Position - getRoot(plr.Character).Position).magnitude)
 							TextLabel.Text = 'Name: '..plr.Name..' | Health: '..round(plr.Character:FindFirstChildOfClass('Humanoid').Health, 1)..' | Studs: '..pos
@@ -6909,10 +6875,6 @@ addcmd('serverinfo',{'info','sinfo'},function(args, speaker)
 	end)
 end)
 
-addcmd("serverscan", {}, function(args, speaker)
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/serverscanner.lua"))()
-end)
-
 addcmd("jobid", {}, function(args, speaker)
 	toClipboard("roblox://placeId=" .. PlaceId .. "&gameInstanceId=" .. JobId)
 end)
@@ -7804,11 +7766,11 @@ addcmd('showiy',{'unhideiy'},function(args, speaker)
 end)
 
 addcmd('rec', {'record'}, function(args, speaker)
-	return COREGUI:ToggleRecording()
+	return CoreGui:ToggleRecording()
 end)
 
 addcmd('screenshot', {'scrnshot'}, function(args, speaker)
-	return COREGUI:TakeScreenshot()
+	return CoreGui:TakeScreenshot()
 end)
 
 addcmd('togglefs', {'togglefullscreen'}, function(args, speaker)
@@ -7833,21 +7795,21 @@ addcmd("savegame", {"saveplace"}, function(args, speaker)
 end)
 
 addcmd("clearerror", {"clearerrors"}, function(args, speaker)
-    GuiService:ClearError()
+	GuiService:ClearError()
 end)
 
 addcmd("antigameplaypaused", {}, function(args, speaker)
-    pcall(function() networkPaused:Disconnect() end)
-    networkPaused = COREGUI.RobloxGui.ChildAdded:Connect(function(obj)
-        if obj.Name == "CoreScripts/NetworkPause" then
-            obj:Destroy()
-        end
-    end)
-    COREGUI.RobloxGui["CoreScripts/NetworkPause"]:Destroy()
+	pcall(function() networkPaused:Disconnect() end)
+	networkPaused = CoreGui.RobloxGui.ChildAdded:Connect(function(obj)
+		if obj.Name == "CoreScripts/NetworkPause" then
+			obj:Destroy()
+		end
+	end)
+	CoreGui.RobloxGui["CoreScripts/NetworkPause"]:Destroy()
 end)
 
 addcmd("unantigameplaypaused", {}, function(args, speaker)
-    networkPaused:Disconnect()
+	networkPaused:Disconnect()
 end)
 
 addcmd('clientantikick',{'antikick'},function(args, speaker)
@@ -8037,7 +7999,7 @@ end)
 
 addcmd('noesp',{'unesp','unespteam'},function(args, speaker)
 	ESPenabled = false
-	for i,c in pairs(COREGUI:GetChildren()) do
+	for i,c in pairs(CoreGui:GetChildren()) do
 		if string.sub(c.Name, -4) == '_ESP' then
 			c:Destroy()
 		end
@@ -8045,10 +8007,10 @@ addcmd('noesp',{'unesp','unespteam'},function(args, speaker)
 end)
 
 addcmd("esptransparency", {}, function(args, speaker)
-    espTransparency = tonumber(args[1]) or 0.3
-    if ESPenabled then execCmd("esp") end
-    if CHMSenabled then execCmd("chams") end
-    updatesaves()
+	espTransparency = tonumber(args[1]) or 0.3
+	if ESPenabled then execCmd("esp") end
+	if CHMSenabled then execCmd("chams") end
+	updatesaves()
 end)
 
 local espParts = {}
@@ -8135,7 +8097,7 @@ addcmd('nochams',{'unchams'},function(args, speaker)
 	CHMSenabled = false
 	for i,v in pairs(Players:GetPlayers()) do
 		local chmsplr = v
-		for i,c in pairs(COREGUI:GetChildren()) do
+		for i,c in pairs(CoreGui:GetChildren()) do
 			if c.Name == chmsplr.Name..'_CHMS' then
 				c:Destroy()
 			end
@@ -8154,14 +8116,14 @@ addcmd('nolocate',{'unlocate'},function(args, speaker)
 	local players = getPlayer(args[1], speaker)
 	if args[1] then
 		for i,v in pairs(players) do
-			for i,c in pairs(COREGUI:GetChildren()) do
+			for i,c in pairs(CoreGui:GetChildren()) do
 				if c.Name == Players[v].Name..'_LC' then
 					c:Destroy()
 				end
 			end
 		end
 	else
-		for i,c in pairs(COREGUI:GetChildren()) do
+		for i,c in pairs(CoreGui:GetChildren()) do
 			if string.sub(c.Name, -3) == '_LC' then
 				c:Destroy()
 			end
@@ -8787,11 +8749,11 @@ addcmd("replicationlag", {"backtrack"}, function(args, speaker)
 end)
 
 addcmd("noprompts", {"nopurchaseprompts"}, function(args, speaker)
-	COREGUI.PurchasePromptApp.Enabled = false
+	CoreGui.PurchasePromptApp.Enabled = false
 end)
 
 addcmd("showprompts", {"showpurchaseprompts"}, function(args, speaker)
-	COREGUI.PurchasePromptApp.Enabled = true
+	CoreGui.PurchasePromptApp.Enabled = true
 end)
 
 promptNewRig = function(speaker, rig)
@@ -8974,45 +8936,45 @@ addcmd('un2022materials',{'unuse2022materials'},function(args, speaker)
 end)
 
 addcmd("goto", {"to"}, function(args, speaker)
-    local character = speaker and speaker.Character
-    local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
-    local players = getPlayer(args[1], speaker)
-    for _, v in pairs(players) do
-        if Players[v].Character ~= nil then
-            if humanoid and humanoid.SeatPart then
-                humanoid.Sit = false
-                task.wait(0.1)
-            end
-            getRoot(speaker.Character).CFrame = getRoot(Players[v].Character):GetPivot() + Vector3.new(3, 1, 0)
-        end
-    end
-    execCmd("breakvelocity")
+	local character = speaker and speaker.Character
+	local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
+	local players = getPlayer(args[1], speaker)
+	for _, v in pairs(players) do
+		if Players[v].Character ~= nil then
+			if humanoid and humanoid.SeatPart then
+				humanoid.Sit = false
+				task.wait(0.1)
+			end
+			getRoot(speaker.Character).CFrame = getRoot(Players[v].Character):GetPivot() + Vector3.new(3, 1, 0)
+		end
+	end
+	execCmd("breakvelocity")
 end)
 
 addcmd("tweengoto", {"tgoto", "tto", "tweento"}, function(args, speaker)
-    local character = speaker and speaker.Character
-    local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
+	local character = speaker and speaker.Character
+	local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
 
-    local oldState = humanoid and humanoid:GetStateEnabled(Enum.HumanoidStateType.Seated)
-    if humanoid then humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false) end
+	local oldState = humanoid and humanoid:GetStateEnabled(Enum.HumanoidStateType.Seated)
+	if humanoid then humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false) end
 
-    local players = getPlayer(args[1], speaker)
-    for _, v in pairs(players) do
-        if Players[v].Character ~= nil then
-            if humanoid and humanoid.SeatPart then
-                humanoid.Sit = false
-                task.wait(0.1)
-            end
-            TweenService:Create(getRoot(speaker.Character), TweenInfo.new(tweenSpeed, Enum.EasingStyle.Linear), {
-                CFrame = getRoot(Players[v].Character):GetPivot() + Vector3.new(3, 1, 0)
-            }):Play()
-        end
-    end
-    execCmd("breakvelocity")
+	local players = getPlayer(args[1], speaker)
+	for _, v in pairs(players) do
+		if Players[v].Character ~= nil then
+			if humanoid and humanoid.SeatPart then
+				humanoid.Sit = false
+				task.wait(0.1)
+			end
+			TweenService:Create(getRoot(speaker.Character), TweenInfo.new(tweenSpeed, Enum.EasingStyle.Linear), {
+				CFrame = getRoot(Players[v].Character):GetPivot() + Vector3.new(3, 1, 0)
+			}):Play()
+		end
+	end
+	execCmd("breakvelocity")
 
-    if type(oldState) == "boolean" then
-        humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, oldState)
-    end
+	if type(oldState) == "boolean" then
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, oldState)
+	end
 end)
 
 addcmd('vehiclegoto',{'vgoto','vtp','vehicletp'},function(args, speaker)
@@ -9326,11 +9288,11 @@ addcmd('thaw',{'unfreeze','unfr'},function(args, speaker)
 end)
 
 addcmd("anchor", {}, function(args, speaker)
-    getRoot(speaker.Character).Anchored = true
+	getRoot(speaker.Character).Anchored = true
 end)
 
 addcmd("unanchor", {}, function(args, speaker)
-    getRoot(speaker.Character).Anchored = false
+	getRoot(speaker.Character).Anchored = false
 end)
 
 oofing = false
@@ -10155,52 +10117,52 @@ addcmd('tweentpposition',{'ttppos'},function(args, speaker)
 end)
 
 addcmd("offset", {}, function(args, speaker)
-    if #args < 3 then return end
-    speaker.Character:TranslateBy(Vector3.new(tonumber(args[1]) or 0, tonumber(args[2]) or 0, tonumber(args[3]) or 0))
+	if #args < 3 then return end
+	speaker.Character:TranslateBy(Vector3.new(tonumber(args[1]) or 0, tonumber(args[2]) or 0, tonumber(args[3]) or 0))
 end)
 
 addcmd("tweenoffset", {"toffset"}, function(args, speaker)
-    if #args < 3 then return end
-    local tpX, tpY, tpZ = tonumber(args[1]), tonumber(args[2]), tonumber(args[3])
-    local root = getRoot(speaker.Character)
-    local pos = root.Position + Vector3.new(tpX, tpY, tpZ)
-    TweenService:Create(root, TweenInfo.new(tweenSpeed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(pos)}):Play()
-    breakVelocity()
+	if #args < 3 then return end
+	local tpX, tpY, tpZ = tonumber(args[1]), tonumber(args[2]), tonumber(args[3])
+	local root = getRoot(speaker.Character)
+	local pos = root.Position + Vector3.new(tpX, tpY, tpZ)
+	TweenService:Create(root, TweenInfo.new(tweenSpeed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(pos)}):Play()
+	breakVelocity()
 end)
 
 addcmd("clickteleport", {}, function(args, speaker)
-    if speaker ~= Players.LocalPlayer then return end
-    notify("Click TP", "Go to Settings > Keybinds > Add to set up click teleport")
+	if speaker ~= Players.LocalPlayer then return end
+	notify("Click TP", "Go to Settings > Keybinds > Add to set up click teleport")
 end)
 
 addcmd("mouseteleport", {"mousetp"}, function(args, speaker)
-    local root = getRoot(speaker.Character)
-    local pos = IYMouse.Hit
-    if root and pos then
-        root.CFrame = CFrame.new(pos.X, pos.Y + 3, pos.Z, select(4, root.CFrame:components()))
-        breakVelocity()
-    end
+	local root = getRoot(speaker.Character)
+	local pos = IYMouse.Hit
+	if root and pos then
+		root.CFrame = CFrame.new(pos.X, pos.Y + 3, pos.Z, select(4, root.CFrame:components()))
+		breakVelocity()
+	end
 end)
 
 addcmd("tptool", {"teleporttool"}, function(args, speaker)
-    local TpTool = Instance.new("Tool")
-    TpTool.Name = "Teleport Tool"
-    TpTool.RequiresHandle = false
-    TpTool.Parent = speaker:FindFirstChildOfClass("Backpack")
-    TpTool.Activated:Connect(function()
-        local root = getRoot(speaker.Character)
-        local pos = IYMouse.Hit
-        if not root or not pos then return end
-        root.CFrame = CFrame.new(pos.X, pos.Y + 3, pos.Z, select(4, root.CFrame:components()))
-        breakVelocity()
-    end)
+	local TpTool = Instance.new("Tool")
+	TpTool.Name = "Teleport Tool"
+	TpTool.RequiresHandle = false
+	TpTool.Parent = speaker:FindFirstChildOfClass("Backpack")
+	TpTool.Activated:Connect(function()
+		local root = getRoot(speaker.Character)
+		local pos = IYMouse.Hit
+		if not root or not pos then return end
+		root.CFrame = CFrame.new(pos.X, pos.Y + 3, pos.Z, select(4, root.CFrame:components()))
+		breakVelocity()
+	end)
 end)
 
 addcmd("thru", {}, function(args, speaker)
-    local root = getRoot(speaker.Character)
-    local num = tonumber(args[1]) or 5
-    local pos = root.CFrame.Position + (root.CFrame.LookVector * num)
-    root.CFrame = CFrame.new(pos, pos + root.CFrame.LookVector)
+	local root = getRoot(speaker.Character)
+	local num = tonumber(args[1]) or 5
+	local pos = root.CFrame.Position + (root.CFrame.LookVector * num)
+	root.CFrame = CFrame.new(pos, pos + root.CFrame.LookVector)
 end)
 
 addcmd('clickdelete',{},function(args, speaker)
@@ -10686,33 +10648,33 @@ addcmd("unchatwindow", {"nochatwindow"}, function(args, speaker)
 end)
 
 addcmd("darkchat", {}, function(args, speaker)
-    local BCC = TextChatService:FindFirstChildOfClass("BubbleChatConfiguration")
-    local CWC = TextChatService:FindFirstChildOfClass("ChatWindowConfiguration")
-    local CIBC = TextChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
-    if BCC then
-        BCC.Enabled = true
-        BCC.BackgroundColor3 = Color3.fromRGB()
-        BCC.BackgroundTransparency = 0.3
-        BCC.TailVisible = true
-        BCC.TextColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
-    end
-    if CWC then
-        CWC.Enabled = true
-        CWC.BackgroundColor3 = Color3.fromRGB()
-        CWC.BackgroundTransparency = 0.3
-        CWC.TextColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
-        CWC.TextStrokeColor3 = Color3.fromRGB()
-        CWC.TextStrokeTransparency = 0.5
-    end
-    if CIBC then
-        CIBC.Enabled = true
-        CIBC.BackgroundColor3 = Color3.fromRGB()
-        CIBC.BackgroundTransparency = 0.5
-        CIBC.PlaceholderColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
-        CIBC.TextColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
-        CIBC.TextStrokeColor3 = Color3.fromRGB()
-        CIBC.TextStrokeTransparency = 0.5
-    end
+	local BCC = TextChatService:FindFirstChildOfClass("BubbleChatConfiguration")
+	local CWC = TextChatService:FindFirstChildOfClass("ChatWindowConfiguration")
+	local CIBC = TextChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
+	if BCC then
+		BCC.Enabled = true
+		BCC.BackgroundColor3 = Color3.fromRGB()
+		BCC.BackgroundTransparency = 0.3
+		BCC.TailVisible = true
+		BCC.TextColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
+	end
+	if CWC then
+		CWC.Enabled = true
+		CWC.BackgroundColor3 = Color3.fromRGB()
+		CWC.BackgroundTransparency = 0.3
+		CWC.TextColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
+		CWC.TextStrokeColor3 = Color3.fromRGB()
+		CWC.TextStrokeTransparency = 0.5
+	end
+	if CIBC then
+		CIBC.Enabled = true
+		CIBC.BackgroundColor3 = Color3.fromRGB()
+		CIBC.BackgroundTransparency = 0.5
+		CIBC.PlaceholderColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
+		CIBC.TextColor3 = Color3.fromRGB(0xFF, 0xFF, 0xFF)
+		CIBC.TextStrokeColor3 = Color3.fromRGB()
+		CIBC.TextStrokeTransparency = 0.5
+	end
 end)
 
 addcmd('blockhead',{},function(args, speaker)
@@ -12003,31 +11965,31 @@ end)
 
 tpwalkStack = 0
 addcmd("teleportwalk", {"tpwalk"}, function(args, speaker)
-    pcall(function() tpwalking:Disconnect() end)
+	pcall(function() tpwalking:Disconnect() end)
 
-    local character = speaker.Character
-    local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
-    local speed = (args[1] and isNumber(args[1])) and tonumber(args[1]) or 1
+	local character = speaker.Character
+	local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
+	local speed = (args[1] and isNumber(args[1])) and tonumber(args[1]) or 1
 
-    if parseBoolean(args[2]) then
-        tpwalkStack = tpwalkStack + speed
-    end
+	if parseBoolean(args[2]) then
+		tpwalkStack = tpwalkStack + speed
+	end
 
-    tpwalking = RunService.Heartbeat:Connect(function(delta)
-        if not (character and humanoid and humanoid.Parent) then
-            tpwalking:Disconnect()
-            return
-        end
+	tpwalking = RunService.Heartbeat:Connect(function(delta)
+		if not (character and humanoid and humanoid.Parent) then
+			tpwalking:Disconnect()
+			return
+		end
 
-        if humanoid.MoveDirection.Magnitude > 0 then
-            character:TranslateBy(humanoid.MoveDirection * (speed + tpwalkStack) * delta * 10)
-        end
-    end)
+		if humanoid.MoveDirection.Magnitude > 0 then
+			character:TranslateBy(humanoid.MoveDirection * (speed + tpwalkStack) * delta * 10)
+		end
+	end)
 end)
 
 addcmd("unteleportwalk", {"untpwalk"}, function(args, speaker)
-    tpwalkStack = 0
-    tpwalking:Disconnect()
+	tpwalkStack = 0
+	tpwalking:Disconnect()
 end)
 
 function bring(speaker,target,fast)
@@ -12442,75 +12404,75 @@ addcmd("unstaffwatch", {}, function(args, speaker)
 end)
 
 local function playerGroups()
-    local players = Players:GetPlayers()
-    local graph = {}
-    local seen = {}
-    local groups = {}
+	local players = Players:GetPlayers()
+	local graph = {}
+	local seen = {}
+	local groups = {}
 
-    for _, p in ipairs(players) do
-        graph[p] = {}
-    end
+	for _, p in ipairs(players) do
+		graph[p] = {}
+	end
 
-    for i = 1, #players do
-        for j = i + 1, #players do
-            local p1 = players[i]
-            local p2 = players[j]
+	for i = 1, #players do
+		for j = i + 1, #players do
+			local p1 = players[i]
+			local p2 = players[j]
 
-            local success, result = pcall(function()
-                return p1:IsFriendsWithAsync(p2.UserId)
-            end)
+			local success, result = pcall(function()
+				return p1:IsFriendsWithAsync(p2.UserId)
+			end)
 
-            if success and result then
-                table.insert(graph[p1], p2)
-                table.insert(graph[p2], p1)
-            end
-        end
-    end
+			if success and result then
+				table.insert(graph[p1], p2)
+				table.insert(graph[p2], p1)
+			end
+		end
+	end
 
-    local function dfs(player, group)
-        seen[player] = true
-        table.insert(group, player)
+	local function dfs(player, group)
+		seen[player] = true
+		table.insert(group, player)
 
-        for _, possible in ipairs(graph[player]) do
-            if not seen[possible] then
-                dfs(possible, group)
-            end
-        end
-    end
+		for _, possible in ipairs(graph[player]) do
+			if not seen[possible] then
+				dfs(possible, group)
+			end
+		end
+	end
 
-    for _, p in ipairs(players) do
-        if not seen[p] then
-            local group = {}
-            dfs(p, group)
-            table.insert(groups, group)
-        end
-    end
+	for _, p in ipairs(players) do
+		if not seen[p] then
+			local group = {}
+			dfs(p, group)
+			table.insert(groups, group)
+		end
+	end
 
-    return groups
+	return groups
 end
 
 addcmd("findfriendgroups", {}, function(args, speaker)
-    notify("Checking Players", "This might take a while (slow function)")
+	notify("Checking Players", "This might take a while (slow function)")
 
-    local groups = playerGroups()
-    local playerList = StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.PlayerList)
+	local groups = playerGroups()
+	local playerList = StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.PlayerList)
 
-    local result = ""
-    local index = 1
-    local found = 0
+	local result = ""
+	local index = 1
+	local found = 0
 
-    for _, group in ipairs(groups) do
-        if #group == 1 then continue end
-        local names = {}
-        for _, player in ipairs(group) do
-            table.insert(names, playerList and player.DisplayName or player.Name)
-        end
-        result = result .. index .. ". " .. table.concat(names, ", ") .. "\n"
-        index = index + 1
-        found = found + 1
-    end
+	for _, group in ipairs(groups) do
+		if #group == 1 then continue end
+		local names = {}
+		for _, player in ipairs(group) do
+			table.insert(names, playerList and player.DisplayName or player.Name)
+		end
+		result = result .. index .. ". " .. table.concat(names, ", ") .. "\n"
+		index = index + 1
+		found = found + 1
+	end
 
-    createPopup("Friend Groups", found == 0 and "None" or result)
+	createPopup("Friend Groups", found == 0 and "None" or result)
 end)
 
 addcmd('removeterrain',{'rterrain','noterrain'},function(args, speaker)
@@ -12519,7 +12481,7 @@ end)
 
 addcmd('clearnilinstances',{'nonilinstances','cni'},function(args, speaker)
 	if getnilinstances then
-		for i,v in pairs(getnilinstances()) do
+		for _, v in getnilinstances() do
 			v:Destroy()
 		end
 	else
@@ -12582,19 +12544,18 @@ addcmd("trip", {}, function(args, speaker)
 end)
 
 addcmd("removeads", {"adblock"}, function(args, speaker)
-	while wait() do
-		pcall(function()
-			for i, v in pairs(workspace:GetDescendants()) do
-				if v:IsA("PackageLink") then
-					if v.Parent:FindFirstChild("ADpart") then
-						v.Parent:Destroy()
-					end
-					if v.Parent:FindFirstChild("AdGuiAdornee") then
-						v.Parent.Parent:Destroy()
-					end
+	while true do
+		for _, v in workspace:GetDescendants() do
+			if v:IsA("PackageLink") then
+				if v.Parent:FindFirstChild("ADpart") then
+					v.Parent:Destroy()
+				end
+				if v.Parent:FindFirstChild("AdGuiAdornee") then
+					v.Parent.Parent:Destroy()
 				end
 			end
-		end)
+		end
+		task.wait(.1)
 	end
 end)
 
@@ -12618,6 +12579,9 @@ addcmd("scare", {"spook"}, function(args, speaker)
 end)
 
 addcmd("alignmentkeys", {}, function(args, speaker)
+	if alignmentKeys and alignmentKeys.Connected then
+		return
+	end
 	alignmentKeys = UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		if gameProcessed then return end
 		if input.KeyCode == Enum.KeyCode.Comma then workspace.CurrentCamera:PanUnits(-1) end
@@ -12786,7 +12750,7 @@ end)
 local freezingua = nil
 frozenParts = {}
 addcmd('freezeunanchored',{'freezeua'},function(args, speaker)
-	local badnames = {
+	local badNames = {
 		"Head",
 		"UpperTorso",
 		"LowerTorso",
@@ -12809,78 +12773,90 @@ addcmd('freezeunanchored',{'freezeua'},function(args, speaker)
 		"Left Leg",
 		"HumanoidRootPart"
 	}
-	local function FREEZENOOB(v)
-		if v:IsA("BasePart" or "UnionOperation") and v.Anchored == false then
-			local BADD = false
-			for i = 1,#badnames do
-				if v.Name == badnames[i] then
-					BADD = true
-				end
-			end
-			if speaker.Character and v:IsDescendantOf(speaker.Character) then
-				BADD = true
-			end
-			if BADD == false then
-				for i,c in pairs(v:GetChildren()) do
-					if c:IsA("BodyPosition") or c:IsA("BodyGyro") then
+	local function freeze(v)
+		if v:IsA("BasePart") and not v.Anchored then
+			if not table.find(badNames, v.Name) and not v:IsDescendantOf(speaker.Character) then
+				for _, c in v:GetChildren() do
+					if c:IsA("AlignPosition") or c:IsA("AlignOrientation") then
 						c:Destroy()
 					end
 				end
-				local bodypos = Instance.new("BodyPosition")
-				bodypos.Parent = v
-				bodypos.Position = v.Position
-				bodypos.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-				local bodygyro = Instance.new("BodyGyro")
-				bodygyro.Parent = v
-				bodygyro.CFrame = v.CFrame
-				bodygyro.MaxTorque = Vector3.new(math.huge,math.huge,math.huge)
-				if not table.find(frozenParts,v) then
-					table.insert(frozenParts,v)
+				
+				local attachment = Instance.new("Attachment")
+				local alignPos = Instance.new("AlignPosition")
+				alignPos.Position = v.Position
+				alignPos.MaxForce = math.huge
+				alignPos.MaxVelocity = math.huge
+				alignPos.Responsiveness = 200
+				alignPos.Mode = Enum.PositionAlignmentMode.OneAttachment
+				alignPos.Attachment0 = attachment
+				alignPos.Enabled = true
+				local alignOrient = Instance.new("AlignOrientation")
+				alignOrient.CFrame = v.CFrame
+				alignOrient.MaxTorque = math.huge
+				alignOrient.Responsiveness = 200
+				alignOrient.Mode = Enum.OrientationAlignmentMode.OneAttachment
+				alignOrient.Attachment0 = attachment
+				alignOrient.Enabled = true
+				attachment.Parent, alignPos.Parent, alignOrient.Parent = v, v, v
+				if not table.find(frozenParts, v) then
+					table.insert(frozenParts, v)
 				end
 			end
 		end
 	end
-	for i,v in pairs(workspace:GetDescendants()) do
-		FREEZENOOB(v)
+	for _, v in workspace:GetDescendants() do
+		task.defer(freeze, v)
 	end
-	freezingua = workspace.DescendantAdded:Connect(FREEZENOOB)
+	freezingua = workspace.DescendantAdded:Connect(freeze)
 end)
 
 addcmd('thawunanchored',{'thawua','unfreezeunanchored','unfreezeua'},function(args, speaker)
 	if freezingua then
 		freezingua:Disconnect()
 	end
-	for i,v in pairs(frozenParts) do
-		for i,c in pairs(v:GetChildren()) do
-			if c:IsA("BodyPosition") or c:IsA("BodyGyro") then
+	for _ ,v in frozenParts do
+		for _, c in v:GetChildren() do
+			if c:IsA("AlignPosition") or c:IsA("AlignOrientation") then
 				c:Destroy()
 			end
 		end
 	end
-	frozenParts = {}
+	table.clear(frozenParts)
 end)
 
 addcmd('tpunanchored',{'tpua'},function(args, speaker)
 	local players = getPlayer(args[1], speaker)
-	for i,v in pairs(players) do
-		local Forces = {}
-		for _,part in pairs(workspace:GetDescendants()) do
-			if Players[v].Character:FindFirstChild('Head') and part:IsA("BasePart" or "UnionOperation" or "Model") and part.Anchored == false and not part:IsDescendantOf(speaker.Character) and part.Name == "Torso" == false and part.Name == "Head" == false and part.Name == "Right Arm" == false and part.Name == "Left Arm" == false and part.Name == "Right Leg" == false and part.Name == "Left Leg" == false and part.Name == "HumanoidRootPart" == false then
-				for i,c in pairs(part:GetChildren()) do
-					if c:IsA("BodyPosition") or c:IsA("BodyGyro") then
+	for _, v in players do
+		if not Players[v].Character or not Players[v].Character:FindFirstChild("Head") then break end
+
+		local forces = {}
+		for _, part in workspace:GetDescendants() do
+			if part:IsA("BasePart") and not part.Anchored and not Players:GetPlayerFromCharacter(part:FindFirstAncestorOfClass("Model")) then
+				for _, c in part:GetChildren() do
+					if c:IsA("BodyMover") or c:IsA("AlignPosition") then
 						c:Destroy()
 					end
 				end
-				local ForceInstance = Instance.new("BodyPosition")
-				ForceInstance.Parent = part
-				ForceInstance.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-				table.insert(Forces, ForceInstance)
-				if not table.find(frozenParts,part) then
-					table.insert(frozenParts,part)
+				
+				local attachment = Instance.new("Attachment")
+				local alignPos = Instance.new("AlignPosition")
+				alignPos.Mode = Enum.PositionAlignmentMode.OneAttachment
+				alignPos.MaxForce = math.huge
+				alignPos.MaxVelocity = math.huge
+				alignPos.Responsiveness = 200
+				alignPos.Attachment0 = attachment
+				alignPos.Enabled = true
+				attachment.Parent, alignPos.Parent = part, part
+
+				table.insert(forces, alignPos)
+				if not table.find(frozenParts, part) then
+					table.insert(frozenParts, part)
 				end
 			end
 		end
-		for i,c in pairs(Forces) do
+		
+		for _, c in forces do
 			c.Position = Players[v].Character.Head.Position
 		end
 	end
@@ -13032,9 +13008,9 @@ addcmd('removecmd',{'deletecmd'},function(args, speaker)
 end)
 
 addcmd("debug", {}, function(args, speaker)
-    local opt = parseBoolean(args[1], true)
-    _G.IY_DEBUG = opt
-    notify("debug", tostring(opt), 1)
+	local opt = parseBoolean(args[1], true)
+	_G.IY_DEBUG = opt
+	notify("debug", tostring(opt), 1)
 end)
 
 if IsOnMobile then
@@ -13115,7 +13091,7 @@ eventEditor.RegisterEvent("OnChatted",{
 	{Type="String",Name="Message Filter ($2)"}
 })
 
-function hookCharEvents(plr,instant)
+function hookCharEvents(plr, instant)
 	task.spawn(function()
 		local char = plr.Character
 		if not char then return end
@@ -13160,7 +13136,7 @@ Players.PlayerAdded:Connect(function(plr)
 end)
 
 if not isLegacyChat then
-	TextChatService.MessageReceived:Connect(function(message)
+	TextChatService.MessageReceived:Connect(function(message: TextChatMessage)
 		if message.TextSource then
 			local player = Players:GetPlayerByUserId(message.TextSource.UserId)
 			if not player then return end
@@ -13168,7 +13144,7 @@ if not isLegacyChat then
 			if logsEnabled == true then
 				CreateLabel(player.Name, message.Text)
 			end
-			if player.UserId == Players.LocalPlayer.UserId then
+			if message.Status == Enum.TextChatMessageStatus.Success and player.UserId == Players.LocalPlayer.UserId then
 				do_exec(message.Text, Players.LocalPlayer)
 			end
 			eventEditor.FireEvent("OnChatted", player.Name, message.Text)
@@ -13177,11 +13153,12 @@ if not isLegacyChat then
 	end)
 end
 
-for _,plr in pairs(Players:GetPlayers()) do
-	pcall(function()
-		plr.CharacterAdded:Connect(function() eventEditor.FireEvent("OnSpawn",tostring(plr)) hookCharEvents(plr) end)
-		hookCharEvents(plr)
+for _, plr in Players:GetPlayers() do
+	plr.CharacterAdded:Connect(function()
+		eventEditor.FireEvent("OnSpawn",tostring(plr)) 
+		hookCharEvents(plr)	
 	end)
+	hookCharEvents(plr)
 end
 
 if spawnCmds and #spawnCmds > 0 then
@@ -13323,19 +13300,19 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    task.wait()
-    pcall(function()
-        Credits:TweenPosition(UDim2.new(0, 0, 0.9, 0), "Out", "Quart", 0.2)
-        Logo:TweenSizeAndPosition(UDim2.new(0, 175, 0, 175), UDim2.new(0, 37, 0, 45), "Out", "Quart", 0.3)
-        task.wait(1)
-        local OutInfo = TweenInfo.new(1.6809, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false, 0)
-        TweenService:Create(Logo, OutInfo, {ImageTransparency = 1}):Play()
-        TweenService:Create(IntroBackground, OutInfo, {BackgroundTransparency = 1}):Play()
-        Credits:TweenPosition(UDim2.new(0, 0, 0.9, 30), "Out", "Quart", 0.2)
-        task.wait(0.2)
-    end)
-    Logo:Destroy()
-    Credits:Destroy()
-    IntroBackground:Destroy()
-    minimizeHolder()
+	task.wait()
+	pcall(function()
+		Credits:TweenPosition(UDim2.new(0, 0, 0.9, 0), "Out", "Quart", 0.2)
+		Logo:TweenSizeAndPosition(UDim2.new(0, 175, 0, 175), UDim2.new(0, 37, 0, 45), "Out", "Quart", 0.3)
+		task.wait(1)
+		local OutInfo = TweenInfo.new(1.6809, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false, 0)
+		TweenService:Create(Logo, OutInfo, {ImageTransparency = 1}):Play()
+		TweenService:Create(IntroBackground, OutInfo, {BackgroundTransparency = 1}):Play()
+		Credits:TweenPosition(UDim2.new(0, 0, 0.9, 30), "Out", "Quart", 0.2)
+		task.wait(0.2)
+	end)
+	Logo:Destroy()
+	Credits:Destroy()
+	IntroBackground:Destroy()
+	minimizeHolder()
 end)
