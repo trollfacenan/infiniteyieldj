@@ -46,7 +46,7 @@ replicatesignal = missing("function", replicatesignal)
 getconnections = missing("function", getconnections or get_signal_cons)
 
 local Services = setmetatable({}, {
-	__index = @native function(self, name)
+	__index = function(self, name)
 		const cache = cloneref(game:GetService(name))
 		rawset(self, name, cache)
 		return cache
