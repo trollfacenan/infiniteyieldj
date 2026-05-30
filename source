@@ -7,8 +7,7 @@ if getgenv then
 end
 
 function missing(t, f, fallback)
-	if type(f) == t then return f end
-	return fallback
+	return typeof(f) == t and f or fallback
 end
 
 cloneref = missing("function", cloneref, function(...) return ... end)
@@ -46,17 +45,11 @@ setthreadidentity = missing("function", setthreadidentity or (syn and syn.set_th
 replicatesignal = missing("function", replicatesignal)
 getconnections = missing("function", getconnections or get_signal_cons)
 
-Services = setmetatable({}, {
-	__index = function(self, name)
-		local success, cache = pcall(function()
-			return cloneref(game:GetService(name))
-		end)
-		if success then
-			rawset(self, name, cache)
-			return cache
-		else
-			error("Invalid Service: " .. tostring(name))
-		end
+local Services = setmetatable({}, {
+	__index = @native function(self, name)
+		const cache = cloneref(game:GetService(name))
+		rawset(self, name, cache)
+		return cache
 	end
 })
 
@@ -92,11 +85,12 @@ SocialService = Services.SocialService
 
 LocalPlayer = cloneref(Players.LocalPlayer or Players.PlayerAdded:Wait())
 task.spawn(function()
-	PlayerGui = cloneref(LocalPlayer:FindFirstChildWhichIsA("PlayerGui"))
+	PlayerGui = LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
 	while not PlayerGui do
 		LocalPlayer.ChildAdded:Wait()
-		PlayerGui = cloneref(LocalPlayer:FindFirstChildWhichIsA("PlayerGui"))
+		PlayerGui = LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
 	end
+	PlayerGui = cloneref(PlayerGui)
 end)
 CoreGui = Services.CoreGui
 IYMouse = cloneref(LocalPlayer:GetMouse())
@@ -4483,8 +4477,8 @@ CMDs[#CMDs + 1] = {NAME = 'togglekeepiy', DESC = 'Toggles keepiy'}
 CMDs[#CMDs + 1] = {NAME = 'removeads / adblock', DESC = 'Automatically removes ad billboards'}
 CMDs[#CMDs + 1] = {NAME = 'savegame / saveplace', DESC = 'Uses saveinstance to save the game'}
 CMDs[#CMDs + 1] = {NAME = 'clearerror', DESC = 'Clears the annoying box and blur when a game kicks you'}
-CMDs[#CMDs + 1] = {NAME = 'antigameplaypaused', DESC = 'Clears the annoying box shown when a game is loading assets due to network lag'}
-CMDs[#CMDs + 1] = {NAME = 'unantigameplaypaused', DESC = 'Disables antigameplaypaused'}
+CMDs[#CMDs + 1] = {NAME = 'antigameplaypaused / nopause', DESC = 'Clears the annoying box shown when a game is loading assets due to network lag'}
+CMDs[#CMDs + 1] = {NAME = 'unantigameplaypaused / unnopause', DESC = 'Disables antigameplaypaused'}
 CMDs[#CMDs + 1] = {NAME = 'clientantikick / antikick (CLIENT)', DESC = 'Prevents localscripts from kicking you'}
 CMDs[#CMDs + 1] = {NAME = 'clientantiteleport / antiteleport (CLIENT)', DESC = 'Prevents localscripts from teleporting you'}
 CMDs[#CMDs + 1] = {NAME = 'allowrejoin / allowrj [true/false] (CLIENT)', DESC = 'Changes if antiteleport allows you to rejoin or not'}
@@ -5520,12 +5514,12 @@ function getPlayer(list,speaker)
 
 	local foundList = {}
 
-	for _,name in pairs(nameList) do
+	for _,name in nameList do
 		if string.sub(name,1,1) ~= "+" and string.sub(name,1,1) ~= "-" then name = "+"..name end
 		local tokens = toTokens(name)
 		local initialPlayers = Players:GetPlayers()
 
-		for i,v in pairs(tokens) do
+		for i,v in tokens do
 			if v.Operator == "+" then
 				local tokenContent = v.Name
 				local foundCase = false
@@ -5555,11 +5549,15 @@ function getPlayer(list,speaker)
 			end
 		end
 
-		for i,v in pairs(initialPlayers) do table.insert(foundList,v) end
+		for _, v in initialPlayers do
+			table.insert(foundList,v)
+		end
 	end
 
 	local foundNames = {}
-	for i,v in pairs(foundList) do table.insert(foundNames,v.Name) end
+	for _, v in foundList do
+		table.insert(foundNames,v.Name)
+	end
 
 	return foundNames
 end
@@ -5622,7 +5620,6 @@ UserInputService.InputBegan:Connect(function(input,gameProcessed)
 end)
 
 LocalPlayer.Chatted:Connect(function()
-	wait()
 	if lastEnteredString then
 		local message = lastEnteredString
 		lastEnteredString = nil
@@ -5680,11 +5677,21 @@ end)
 local ESPenabled = false
 local chamsEnabled = false
 
-local function esp(plr)
+local function esp(plr: Player)
 	local highlight = Instance.new("Highlight")
 	local character = plr.Character or plr.CharacterAdded:Wait()
 	highlight.Name = "IYesp"
 	highlight.Parent = character
+	local charAdded
+	charAdded = plr.CharacterAdded:Connect(function(char)
+		if not ESPenabled then
+			charAdded:Disconnect()
+			return
+		end
+		local highlight = Instance.new("Highlight")
+		highlight.Name = "IYesp"
+		highlight.Parent = character
+	end)
 end
 
 function chams(plr)
@@ -6880,7 +6887,6 @@ addcmd("exit", {}, function(args, speaker)
 	game:Shutdown()
 end)
 
-local Noclipping
 addcmd('noclip',{},function(args, speaker)
 	if Noclipping then
 		Noclipping:Disconnect()
@@ -7735,7 +7741,7 @@ end)
 addcmd("savegame", {"saveplace"}, function(args, speaker)
 	if saveinstance then
 		notify("Loading", "Downloading game. This will take a while")
-		saveinstance()
+		saveinstance(game)
 		notify("Game Saved", "Saved place to the workspace folder within your exploit folder.")
 	else
 		notify("Incompatible Exploit", "Your exploit does not support this command (missing saveinstance)")
@@ -7746,21 +7752,24 @@ addcmd("clearerror", {"clearerrors"}, function(args, speaker)
 	GuiService:ClearError()
 end)
 
---softrewrite marker
-
-addcmd("antigameplaypaused", {}, function(args, speaker)
-	pcall(function() networkPaused:Disconnect() end)
-	networkPaused = CoreGui.RobloxGui.ChildAdded:Connect(function(obj)
-		if obj.Name == "CoreScripts/NetworkPause" then
-			obj:Destroy()
+do
+	local networkPaused
+	addcmd("antigameplaypaused", {'nopause'}, function(args, speaker)
+		if networkPaused then
+			networkPaused:Disconnect()
 		end
+		networkPaused = LocalPlayer:GetPropertyChangedSignal('GameplayPaused'):Connect(function()
+			LocalPlayer.GameplayPaused = false
+		end)
 	end)
-	CoreGui.RobloxGui["CoreScripts/NetworkPause"]:Destroy()
-end)
 
-addcmd("unantigameplaypaused", {}, function(args, speaker)
-	networkPaused:Disconnect()
-end)
+	addcmd("unantigameplaypaused", {'unnopause'}, function(args, speaker)
+		if networkPaused then
+			networkPaused:Disconnect()
+		end
+		networkPaused = nil
+	end)
+end
 
 addcmd('clientantikick',{'antikick'},function(args, speaker)
 	if not hookmetamethod then 
@@ -7930,7 +7939,7 @@ addcmd('esp',{},function(args, speaker)
 			end
 		end
 	else
-		notify('ESP','Disable chams (nochams) before using esp')
+		notify('ESP', 'Disable chams via "nochams" before using ESP')
 	end
 end)
 
