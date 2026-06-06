@@ -6,44 +6,47 @@ if getgenv then
 	getgenv().IY_LOADED = true
 end
 
-function missing(t, f, fallback)
-	return typeof(f) == t and f or fallback
-end
 
-cloneref = missing("function", cloneref, function(...) return ... end)
-sethidden =  missing("function", sethiddenproperty or set_hidden_property or set_hidden_prop)
-gethidden =  missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
-queueteleport =  missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
-httprequest =  missing("function", request or http_request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request))
-everyClipboard = missing("function", setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set))
-firetouchinterest = missing("function", firetouchinterest)
-waxwritefile, waxreadfile = writefile, readfile
-writefile = missing("function", waxwritefile) and function(file, data, safe)
-	if safe == true then return pcall(waxwritefile, file, data) end
-	waxwritefile(file, data)
-end
-readfile = missing("function", waxreadfile) and function(file, safe)
-	if safe == true then return pcall(waxreadfile, file) end
-	return waxreadfile(file)
-end
-isfile = missing("function", isfile, readfile and function(file)
-	local success, result = pcall(function()
-		return readfile(file)
+do
+	local function missing(t, f, fallback)
+		return typeof(f) == t and f or fallback
+	end
+
+	cloneref = missing("function", cloneref, function(...) return ... end)
+	sethidden =  missing("function", sethiddenproperty or set_hidden_property or set_hidden_prop)
+	gethidden =  missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
+	queueteleport =  missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
+	httprequest =  missing("function", request or http_request or (syn and syn.request) or (http and http.request) or (fluxus and fluxus.request))
+	everyClipboard = missing("function", setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set))
+	firetouchinterest = missing("function", firetouchinterest)
+	waxwritefile, waxreadfile = writefile, readfile
+	writefile = missing("function", waxwritefile) and function(file, data, safe)
+		if safe == true then return pcall(waxwritefile, file, data) end
+		waxwritefile(file, data)
+	end
+	readfile = missing("function", waxreadfile) and function(file, safe)
+		if safe == true then return pcall(waxreadfile, file) end
+		return waxreadfile(file)
+	end
+	isfile = missing("function", isfile, readfile and function(file)
+		local success, result = pcall(function()
+			return readfile(file)
+		end)
+		return success and result ~= nil and result ~= ""
 	end)
-	return success and result ~= nil and result ~= ""
-end)
-makefolder = missing("function", makefolder)
-isfolder = missing("function", isfolder)
-waxgetcustomasset = missing("function", getcustomasset or getsynasset)
-hookfunction = missing("function", hookfunction)
-hookmetamethod = missing("function", hookmetamethod)
-getnamecallmethod = missing("function", getnamecallmethod or get_namecall_method)
-checkcaller = missing("function", checkcaller, function() return false end)
-newcclosure = missing("function", newcclosure)
-getgc = missing("function", getgc or get_gc_objects)
-setthreadidentity = missing("function", setthreadidentity or (syn and syn.set_thread_identity) or syn_context_set or setthreadcontext)
-replicatesignal = missing("function", replicatesignal)
-getconnections = missing("function", getconnections or get_signal_cons)
+	makefolder = missing("function", makefolder)
+	isfolder = missing("function", isfolder)
+	waxgetcustomasset = missing("function", getcustomasset or getsynasset)
+	hookfunction = missing("function", hookfunction)
+	hookmetamethod = missing("function", hookmetamethod)
+	getnamecallmethod = missing("function", getnamecallmethod or get_namecall_method)
+	checkcaller = missing("function", checkcaller, function() return false end)
+	newcclosure = missing("function", newcclosure)
+	getgc = missing("function", getgc or get_gc_objects)
+	setthreadidentity = missing("function", setthreadidentity or (syn and syn.set_thread_identity) or syn_context_set or setthreadcontext)
+	replicatesignal = missing("function", replicatesignal)
+	getconnections = missing("function", getconnections or get_signal_cons)
+end
 
 local Services = setmetatable({}, {
 	__index = function(self, name)
@@ -84,16 +87,14 @@ VoiceChatService = Services.VoiceChatService
 SocialService = Services.SocialService
 
 LocalPlayer = cloneref(Players.LocalPlayer or Players.PlayerAdded:Wait())
-task.spawn(function()
-	PlayerGui = LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
-	while not PlayerGui do
-		LocalPlayer.ChildAdded:Wait()
-		PlayerGui = LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
-	end
-	PlayerGui = cloneref(PlayerGui)
-end)
 CoreGui = Services.CoreGui
-IYMouse = cloneref(LocalPlayer:GetMouse())
+PlayerGui = LocalPlayer:FindFirstChildWhichIsA('PlayerGui')
+while not PlayerGui do
+	LocalPlayer.ChildAdded:Wait()
+	PlayerGui = LocalPlayer:FindFirstChildWhichIsA('PlayerGui')
+end
+PlayerGui = cloneref(PlayerGui)
+PlayerMouse = cloneref(LocalPlayer:GetMouse())
 PlaceId, JobId = game.PlaceId, game.JobId
 xpcall(function()
 	IsOnMobile = table.find({Enum.Platform.Android, Enum.Platform.IOS}, UserInputService:GetPlatform())
@@ -3360,7 +3361,7 @@ function CreateJoinLabel(plr,ID)
 	info2.Text = string.gsub(info2.Text, "Loading...",splitDates[2].."/"..splitDates[3].."/"..splitDates[1])
 end
 
-IYMouse.KeyDown:Connect(function(Key)
+PlayerMouse.KeyDown:Connect(function(Key)
 	if (Key==prefix) then
 		RunService.RenderStepped:Wait()
 		Cmdbar:CaptureFocus()
@@ -3472,7 +3473,7 @@ ColorsButton.MouseButton1Click:Connect(function()
 				local greenInput = pickerFrame.Green.Input
 				local blueInput = pickerFrame.Blue.Input
 
-				local mouse = IYMouse
+				local mouse = PlayerMouse
 
 				local hue,sat,val = 0,0,1
 				local red,green,blue = 1,1,1
@@ -4126,20 +4127,20 @@ local ClickSelect = nil
 function selectPart()
 	ToPartFrame:TweenPosition(UDim2.new(0.5, -180, 0, 335), "InOut", "Quart", 0.5, true, nil)
 	local function HighlightPart()
-		if selected.Adornee ~= IYMouse.Target then
-			selectionBox.Adornee = IYMouse.Target
+		if selected.Adornee ~= PlayerMouse.Target then
+			selectionBox.Adornee = PlayerMouse.Target
 		else
 			selectionBox.Adornee = nil
 		end
 	end
-	ActivateHighlight = IYMouse.Move:Connect(HighlightPart)
+	ActivateHighlight = PlayerMouse.Move:Connect(HighlightPart)
 	local function SelectPart()
-		if IYMouse.Target ~= nil then
-			selected.Adornee = IYMouse.Target
-			Path.Text = getHierarchy(IYMouse.Target)
+		if PlayerMouse.Target ~= nil then
+			selected.Adornee = PlayerMouse.Target
+			Path.Text = getHierarchy(PlayerMouse.Target)
 		end
 	end
-	ClickSelect = IYMouse.Button1Down:Connect(SelectPart)
+	ClickSelect = PlayerMouse.Button1Down:Connect(SelectPart)
 end
 
 Part.MouseButton1Click:Connect(function()
@@ -4895,7 +4896,7 @@ IndexContents("", true)
 
 function checkTT()
 	local t
-	local guisAtPosition = CoreGui:GetGuiObjectsAtPosition(IYMouse.X, IYMouse.Y)
+	local guisAtPosition = CoreGui:GetGuiObjectsAtPosition(PlayerMouse.X, PlayerMouse.Y)
 
 	for _, gui in pairs(guisAtPosition) do
 		if gui.Parent == CMDsF then
@@ -4904,16 +4905,16 @@ function checkTT()
 	end
 
 	if t ~= nil and t:GetAttribute("Title") ~= nil then
-		local x = IYMouse.X
-		local y = IYMouse.Y
+		local x = PlayerMouse.X
+		local y = PlayerMouse.Y
 		local xP
 		local yP
-		if IYMouse.X > 200 then
+		if PlayerMouse.X > 200 then
 			xP = x - 201
 		else
 			xP = x + 21
 		end
-		if IYMouse.Y > (IYMouse.ViewSizeY-96) then
+		if PlayerMouse.Y > (PlayerMouse.ViewSizeY-96) then
 			yP = y - 97
 		else
 			yP = y
@@ -5226,7 +5227,7 @@ local WorldToScreen = function(Object)
 end
 
 local MousePositionToVector2 = function()
-	return Vector2.new(IYMouse.X, IYMouse.Y)
+	return Vector2.new(PlayerMouse.X, PlayerMouse.Y)
 end
 
 local GetClosestPlayerFromCursor = function()
@@ -6145,7 +6146,7 @@ local function clicktpFunc()
 		local hipHeight = humanoid and humanoid.HipHeight > 0 and (humanoid.HipHeight + 1)
 		local rootPart = getRoot(character)
 		local rootPartPosition = rootPart.Position
-		local hitPosition = IYMouse.Hit.Position
+		local hitPosition = PlayerMouse.Hit.Position
 		local newCFrame = CFrame.new(
 			hitPosition, 
 			Vector3.new(rootPartPosition.X, hitPosition.Y, rootPartPosition.Z)
@@ -6156,7 +6157,7 @@ local function clicktpFunc()
 	end)
 end
 
-IYMouse.Button1Down:Connect(function()
+PlayerMouse.Button1Down:Connect(function()
 	for i,v in pairs(binds) do
 		if v.COMMAND == 'clicktp' then
 			local input = v.KEY
@@ -6170,11 +6171,11 @@ IYMouse.Button1Down:Connect(function()
 		elseif v.COMMAND == 'clickdel' then
 			local input = v.KEY
 			if input == 'RightClick' and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-				pcall(function() IYMouse.Target:Destroy() end)
+				pcall(function() PlayerMouse.Target:Destroy() end)
 			elseif input == 'LeftClick' and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-				pcall(function() IYMouse.Target:Destroy() end)
+				pcall(function() PlayerMouse.Target:Destroy() end)
 			elseif UserInputService:IsKeyDown(Enum.KeyCode[input:sub(14)]) then
-				pcall(function() IYMouse.Target:Destroy() end)
+				pcall(function() PlayerMouse.Target:Destroy() end)
 			end
 		end
 	end
@@ -7248,22 +7249,22 @@ addcmd('float', {'platform'},function(args, speaker)
 		local FloatValue = -3.1
 		floatPart.CFrame = getRoot(pchar).CFrame * CFrame.new(0,FloatValue,0)
 		notify('Float','Float Enabled (Q = down & E = up)')
-		qUp = IYMouse.KeyUp:Connect(function(KEY)
+		qUp = PlayerMouse.KeyUp:Connect(function(KEY)
 			if KEY == 'q' then
 				FloatValue = FloatValue + 0.5
 			end
 		end)
-		eUp = IYMouse.KeyUp:Connect(function(KEY)
+		eUp = PlayerMouse.KeyUp:Connect(function(KEY)
 			if KEY == 'e' then
 				FloatValue = FloatValue - 1.5
 			end
 		end)
-		qDown = IYMouse.KeyDown:Connect(function(KEY)
+		qDown = PlayerMouse.KeyDown:Connect(function(KEY)
 			if KEY == 'q' then
 				FloatValue = FloatValue - 0.5
 			end
 		end)
-		eDown = IYMouse.KeyDown:Connect(function(KEY)
+		eDown = PlayerMouse.KeyDown:Connect(function(KEY)
 			if KEY == 'e' then
 				FloatValue = FloatValue + 1.5
 			end
@@ -7668,7 +7669,7 @@ end)
 
 function deleteGuisAtPos()
 	pcall(function()
-		local guisAtPosition = PlayerGui:GetGuiObjectsAtPosition(IYMouse.X, IYMouse.Y)
+		local guisAtPosition = PlayerGui:GetGuiObjectsAtPosition(PlayerMouse.X, PlayerMouse.Y)
 		for _, gui in pairs(guisAtPosition) do
 			if gui.Visible == true then
 				gui:Destroy()
@@ -8898,13 +8899,15 @@ addcmd("goto", {"to"}, function(args, speaker)
 	local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
 	local players = getPlayer(args[1], speaker)
 	for _, v in pairs(players) do
-		if Players[v].Character ~= nil then
-			if humanoid and humanoid.SeatPart then
-				humanoid.Sit = false
-				task.wait(0.1)
-			end
-			getRoot(speaker.Character).CFrame = getRoot(Players[v].Character):GetPivot() + Vector3.new(3, 1, 0)
+		local plr = Players[v]
+		local char = plr and plr.Character
+		if not char then
+			continue
 		end
+		if humanoid then
+			humanoid.Sit = false
+		end
+		character:PivotTo(char:GetPivot() + Vector3.new(3, 1, 0))
 	end
 	execCmd("breakvelocity")
 end)
@@ -9792,37 +9795,47 @@ addcmd('unautojump',{'noautojump', 'noajump', 'unajump'},function(args, speaker)
 	HumanModCons.ajCA = (HumanModCons.ajCA and HumanModCons.ajCA:Disconnect() and false) or nil
 end)
 
-addcmd('edgejump',{'ejump'},function(args, speaker)
-	local Char = speaker.Character
-	local Human = Char and Char:FindFirstChildWhichIsA("Humanoid")
-	-- Full credit to NoelGamer06 @V3rmillion
-	local state
-	local laststate
-	local lastcf
-	local function edgejump()
-		if Char and Human then
-			laststate = state
-			state = Human:GetState()
-			if laststate ~= state and state == Enum.HumanoidStateType.Freefall and laststate ~= Enum.HumanoidStateType.Jumping then
-				Char.Humanoid.RootPart.CFrame = lastcf
-				Char.Humanoid.RootPart.Velocity = Vector3.new(Char.Humanoid.RootPart.Velocity.X, Human.JumpPower or Human.JumpHeight, Char.Humanoid.RootPart.Velocity.Z)
-			end
-			lastcf = Char.Humanoid.RootPart.CFrame
+do
+	local cons = {}
+	local function onchar(char)
+		if not char then
+			return
 		end
+		local remove = {}
+		for i,v in cons do
+			if not v.Instance.Parent then
+				v.Connection:Disconnect()
+				remove[#remove+1] = i
+			end
+		end
+		for i = #remove, 1, -1 do
+			table.remove(cons, remove[i])
+		end
+		table.clear(remove); remove = nil
+		local hum:Humanoid = char:FindFirstChildWhichIsA('Humanoid')
+		while not hum do
+			char.ChildAdded:Wait()
+			hum = char:FindFirstChildWhichIsA('Humanoid')
+		end
+		cons[#cons+1] = {Instance = hum, Connection = hum.StateChanged:Connect(function(old, new)
+			if old ~= Enum.HumanoidStateType.Jumping and new == Enum.HumanoidStateType.Freefall then
+				hum:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end)}
 	end
-	edgejump()
-	HumanModCons.ejLoop = (HumanModCons.ejLoop and HumanModCons.ejLoop:Disconnect() and false) or RunService.RenderStepped:Connect(edgejump)
-	HumanModCons.ejCA = (HumanModCons.ejCA and HumanModCons.ejCA:Disconnect() and false) or speaker.CharacterAdded:Connect(function(nChar)
-		Char, Human = nChar, nChar:WaitForChild("Humanoid")
-		edgejump()
-		HumanModCons.ejLoop = (HumanModCons.ejLoop and HumanModCons.ejLoop:Disconnect() and false) or RunService.RenderStepped:Connect(edgejump)
+	
+	addcmd('edgejump',{'ejump'},function(args, speaker)
+		cons[#cons+1] = {Instance = LocalPlayer, Connection = LocalPlayer.CharacterAdded:Connect(onchar)}
+		onchar(LocalPlayer.Character)
 	end)
-end)
 
-addcmd('unedgejump',{'noedgejump', 'noejump', 'unejump'},function(args, speaker)
-	HumanModCons.ejLoop = (HumanModCons.ejLoop and HumanModCons.ejLoop:Disconnect() and false) or nil
-	HumanModCons.ejCA = (HumanModCons.ejCA and HumanModCons.ejCA:Disconnect() and false) or nil
-end)
+	addcmd('unedgejump',{'noedgejump', 'noejump', 'unejump'},function(args, speaker)
+		for _,v in cons do
+			v.Connection:Disconnect()
+		end
+		table.clear(cons)
+	end)
+end
 
 addcmd("team", {}, function(args, speaker)
 	local teamName = getstring(1, args)
@@ -10095,7 +10108,7 @@ end)
 
 addcmd("mouseteleport", {"mousetp"}, function(args, speaker)
 	local root = getRoot(speaker.Character)
-	local pos = IYMouse.Hit
+	local pos = PlayerMouse.Hit
 	if root and pos then
 		root.CFrame = CFrame.new(pos.X, pos.Y + 3, pos.Z, select(4, root.CFrame:components()))
 		breakVelocity()
@@ -10109,7 +10122,7 @@ addcmd("tptool", {"teleporttool"}, function(args, speaker)
 	TpTool.Parent = speaker:FindFirstChildOfClass("Backpack")
 	TpTool.Activated:Connect(function()
 		local root = getRoot(speaker.Character)
-		local pos = IYMouse.Hit
+		local pos = PlayerMouse.Hit
 		if not root or not pos then return end
 		root.CFrame = CFrame.new(pos.X, pos.Y + 3, pos.Z, select(4, root.CFrame:components()))
 		breakVelocity()
@@ -12160,7 +12173,7 @@ addcmd('hovername',{},function(args, speaker)
 	nbSelection.Color3 = Color3.new(1, 1, 1)
 	local function updateNameBox()
 		local t
-		local target = IYMouse.Target
+		local target = PlayerMouse.Target
 
 		if target then
 			local humanoid = target.Parent:FindFirstChildOfClass("Humanoid") or target.Parent.Parent:FindFirstChildOfClass("Humanoid")
@@ -12170,11 +12183,11 @@ addcmd('hovername',{},function(args, speaker)
 		end
 
 		if t ~= nil then
-			local x = IYMouse.X
-			local y = IYMouse.Y
+			local x = PlayerMouse.X
+			local y = PlayerMouse.Y
 			local xP
 			local yP
-			if IYMouse.X > 200 then
+			if PlayerMouse.X > 200 then
 				xP = x - 205
 				nameBox.TextXAlignment = Enum.TextXAlignment.Right
 			else
@@ -12192,7 +12205,7 @@ addcmd('hovername',{},function(args, speaker)
 			nbSelection.Adornee = nil
 		end
 	end
-	nbUpdateFunc = IYMouse.Move:Connect(updateNameBox)
+	nbUpdateFunc = PlayerMouse.Move:Connect(updateNameBox)
 end)
 
 addcmd('unhovername',{'nohovername'},function(args, speaker)
@@ -13154,7 +13167,7 @@ if aliases and #aliases > 0 then
 	refreshaliases()
 end
 
-IYMouse.Move:Connect(checkTT)
+PlayerMouse.Move:Connect(checkTT)
 
 CaptureService.CaptureBegan:Connect(function()
 	PARENT.Enabled = false
