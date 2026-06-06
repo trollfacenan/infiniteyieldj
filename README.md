@@ -2,10 +2,8 @@
 
 The bestest command line script for roblox.
 
-[![](https://dcbadge.limes.pink/api/server/https://discord.gg/78ZuWSq)](https://discord.gg/78ZuWSq)
-
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/trollfacenan/infiniteyieldj/master/source"))()
 ```
 
  - Currently 400+ commands
