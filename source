@@ -10527,7 +10527,7 @@ do
 		humanoid.Died:Once(a)
 		humanoid.AncestryChanged:Once(a)
 		headSit = RunService.Heartbeat:Connect(function()
-			local root, targetroot = getroot(speaker.Character), getroot(plr.Character)
+			local root, targetroot = getRoot(speaker.Character), getRoot(plr.Character)
 			if not (root and targetroot) then
 				return
 			end
