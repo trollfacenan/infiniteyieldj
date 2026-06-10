@@ -10510,7 +10510,7 @@ end)
 do
 	local headSit
 	addcmd('headsit',{},function(args, speaker)
-		local plr = getPlayer(args[1], speaker)[1]
+		local plr = Players:FindFirstChild(getPlayer(args[1], speaker)[1])
 		if not plr then
 			return
 		end
