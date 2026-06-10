@@ -10507,20 +10507,35 @@ addcmd('unloopgoto',{'noloopgoto'},function(args, speaker)
 	loopgoto = nil
 end)
 
-addcmd('headsit',{},function(args, speaker)
-	local players = getPlayer(args[1], speaker)
-	if headSit then headSit:Disconnect() end
-	for i,v in pairs(players)do
-		speaker.Character:FindFirstChildOfClass('Humanoid').Sit = true
+do
+	local headSit
+	addcmd('headsit',{},function(args, speaker)
+		local plr = getPlayer(args[1], speaker)[1]
+		if not plr then
+			return
+		end
+		if headSit then
+			headSit:Disconnect() 
+		end
+		local humanoid:Humanoid = speaker.Character:FindFirstChildOfClass('Humanoid')
+		humanoid.Sit = true
+		local function a()
+			headSit:Disconnect()
+			headSit = nil
+		end
+		humanoid:GetPropertyChangedSignal('Sit'):Once(a)
+		humanoid.Died:Once(a)
+		humanoid.AncestryChanged:Once(a)
 		headSit = RunService.Heartbeat:Connect(function()
-			if Players:FindFirstChild(Players[v].Name) and Players[v].Character ~= nil and getRoot(Players[v].Character) and getRoot(speaker.Character) and speaker.Character:FindFirstChildOfClass('Humanoid').Sit == true then
-				getRoot(speaker.Character).CFrame = getRoot(Players[v].Character).CFrame * CFrame.Angles(0,math.rad(0),0)* CFrame.new(0,1.6,0.4)
-			else
-				headSit:Disconnect()
+			local root, targetroot = getroot(speaker.Character), getroot(plr.Character)
+			if not (root and targetroot) then
+				return
 			end
+			sethidden(root, 'PhysicsRepRootPart', targetroot)
+			root.CFrame = targetroot.CFrame * CFrame.Angles(0,math.rad(0),0)* CFrame.new(0,1.6,0.4)
 		end)
-	end
-end)
+	end)
+end
 
 addcmd('chat',{'say'},function(args, speaker)
 	local cString = getstring(1, args)
