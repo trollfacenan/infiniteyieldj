@@ -50,7 +50,7 @@ end
 
 local Services = setmetatable({}, {
 	__index = function(self, name)
-		const cache = cloneref(game:GetService(name))
+		local cache = cloneref(game:GetService(name))
 		rawset(self, name, cache)
 		return cache
 	end
