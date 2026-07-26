@@ -7,8 +7,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/trollfacenan/infinite
 ```
 
  - Currently 400+ commands
- - Open Source
- - 1(?) month of development
+ - Open-source
+ - Two months of development
 
 ## Developers
 
