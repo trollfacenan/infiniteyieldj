@@ -16,8 +16,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/trollfacenan/infinite
 ### Developers: kevin, applesauce
 
 ## Usage
-You can learn how to use the features of this script in [the wiki](https://github.com/EdgeIY/infiniteyield/wiki)
-*Some commands may not be documented there, as this is a fork and we have no plans to make a wiki.*
+You can learn how to use the features of this script in [the wiki](https://github.com/EdgeIY/infiniteyield/wiki).
+**Some commands may not be documented there, as this is a fork and we have no plans to make a wiki.**
 
 ## Contributing
 There is no specific rules on contributing (as of now) just open a [pull request](https://github.com/trollfacenan/infiniteyieldj/pulls) and if it checks out we will merge it!
