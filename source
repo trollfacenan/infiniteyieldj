@@ -4359,7 +4359,7 @@ end
 task.spawn(function()
 	if not isLegacyChat then return end
 	local chatbox
-	local success, result = pcall(function() chatbox = PlayerGui:WaitForChild("Chat").Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar end)
+	local success, result = pcall(function() chatbox = PlayerGui:WaitForChild("Chat", math.huge).Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar end)
 	if success then
 		local function chatboxFocused()
 			canvasPos = CMDsF.CanvasPosition
@@ -4394,10 +4394,10 @@ task.spawn(function()
 		end
 		local chatboxFocusLostC = chatbox.FocusLost:Connect(chatboxFocusLost)
 
-		PlayerGui:WaitForChild("Chat").Frame.ChatBarParentFrame.ChildAdded:Connect(function(newbar)
+		PlayerGui:WaitForChild("Chat", math.huge).Frame.ChatBarParentFrame.ChildAdded:Connect(function(newbar)
 			wait()
 			if newbar:FindFirstChild('BoxFrame') then
-				chatbox = PlayerGui:WaitForChild("Chat").Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar
+				chatbox = PlayerGui:WaitForChild("Chat", math.huge).Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar
 				if chatboxFocusedC then chatboxFocusedC:Disconnect() end
 				chatboxFocusedC = chatbox.Focused:Connect(chatboxFocused)
 				if chatboxFunc then chatboxFunc:Disconnect() end
